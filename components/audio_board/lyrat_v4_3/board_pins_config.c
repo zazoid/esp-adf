@@ -33,12 +33,17 @@
 
 static const char *TAG = "LYRAT_V4_3";
 
+
+// The next two functions are fixed as it was needed for ESP32-A1S
+// Which is not actually "LYRAT_V4_3" but such workflow was recommended by vendor
+// The essence of the fixes is GPIO numbers
+
 esp_err_t get_i2c_pins(i2c_port_t port, i2c_config_t *i2c_config)
 {
     AUDIO_NULL_CHECK(TAG, i2c_config, return ESP_FAIL);
     if (port == I2C_NUM_0 || port == I2C_NUM_1) {
-        i2c_config->sda_io_num = GPIO_NUM_18;
-        i2c_config->scl_io_num = GPIO_NUM_23;
+        i2c_config->sda_io_num = GPIO_NUM_33;
+        i2c_config->scl_io_num = GPIO_NUM_32;
     } else {
         i2c_config->sda_io_num = -1;
         i2c_config->scl_io_num = -1;
@@ -48,18 +53,19 @@ esp_err_t get_i2c_pins(i2c_port_t port, i2c_config_t *i2c_config)
     return ESP_OK;
 }
 
+
 esp_err_t get_i2s_pins(int port, board_i2s_pin_t *i2s_config)
 {
     AUDIO_NULL_CHECK(TAG, i2s_config, return ESP_FAIL);
+
     if (port == 0 || port == 1) {
-        i2s_config->mck_io_num = GPIO_NUM_0;
-        i2s_config->bck_io_num = GPIO_NUM_5;
+        i2s_config->bck_io_num = GPIO_NUM_27;
         i2s_config->ws_io_num = GPIO_NUM_25;
         i2s_config->data_out_num = GPIO_NUM_26;
         i2s_config->data_in_num = GPIO_NUM_35;
     } else {
-        memset(i2s_config, -1, sizeof(board_i2s_pin_t));
-        ESP_LOGE(TAG, "i2s port %d is not supported", port);
+          memset(i2s_config, -1, sizeof(board_i2s_pin_t));
+          ESP_LOGE(TAG, "i2s port %d is not supported", port);
         return ESP_FAIL;
     }
     return ESP_OK;
